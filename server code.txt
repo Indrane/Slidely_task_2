@@ -1,0 +1,34 @@
+
+import express from 'express';
+import fs from 'fs';
+
+const app = express();
+const port = 3000;
+
+// Define submission data structure (interface for type safety)
+interface Submission {
+    name: string;
+    email: string;
+    phone: string;
+    github_link: string;
+    stopwatch_time: number;
+}
+
+// Load submissions from JSON file on server start
+let submissions: Submission[] = [];
+try {
+    const data = fs.readFileSync('db.json', 'utf8');
+    submissions = JSON.parse(data);
+} catch (err) {
+    console.error('Error loading submissions:', err);
+}
+
+// API endpoints
+app.get('/ping', (req, res) => {
+    res.json(true);
+});
+
+app.post('/submit', (req, res) => {
+    const body = req.body;
+    if (!body.name || !body.email || !body.phone || !body.github_link || !body.stopwatch_time) {
+        return res
